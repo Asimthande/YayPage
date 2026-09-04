@@ -1,1 +1,380 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SpinFest — Email Verified</title>
+<meta name="description" content="Your SpinFest account email has been verified." />
+<style>
+  :root {
+    --background: #0A0A0C;
+    --surface: #17181B;
+    --surface-alt: #202127;
+    --border: #2C2E34;
+    --text-primary: #F5F6F8;
+    --text-secondary: #A6ACB8;
+    --accent-blue: #2979FF;
+    --accent-blue-bright: #4F9DFF;
+    --success: #00B8A9;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--background);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Ambient background: layered radial glows + subtle moving grid,
+     evoking headlights / smoke on tarmac at night without needing
+     any external image assets. */
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(41, 121, 255, 0.16) 0%, transparent 45%),
+      radial-gradient(circle at 85% 75%, rgba(79, 157, 255, 0.14) 0%, transparent 50%),
+      radial-gradient(circle at 50% 100%, rgba(0, 184, 169, 0.08) 0%, transparent 60%),
+      var(--background);
+  }
+
+  .grid-lines {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background-image:
+      linear-gradient(rgba(245, 246, 248, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245, 246, 248, 0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
+  }
+
+  .streak {
+    position: fixed;
+    z-index: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(79, 157, 255, 0.5), transparent);
+    animation: streak-move linear infinite;
+    opacity: 0;
+  }
+  .streak:nth-child(1) { top: 22%; width: 260px; left: -300px; animation-duration: 3.2s; animation-delay: 0.2s; }
+  .streak:nth-child(2) { top: 68%; width: 180px; left: -220px; animation-duration: 4.1s; animation-delay: 1.4s; }
+  .streak:nth-child(3) { top: 42%; width: 320px; left: -360px; animation-duration: 3.6s; animation-delay: 2.3s; }
+
+  @keyframes streak-move {
+    0%   { transform: translateX(0); opacity: 0; }
+    8%   { opacity: 1; }
+    85%  { opacity: 1; }
+    100% { transform: translateX(140vw); opacity: 0; }
+  }
+
+  .stage {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 460px;
+    background: linear-gradient(180deg, var(--surface) 0%, var(--surface-alt) 100%);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 0;
+    text-align: center;
+    box-shadow:
+      0 30px 80px -20px rgba(0, 0, 0, 0.65),
+      0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+    animation: card-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    overflow: hidden;
+  }
+
+  @keyframes card-in {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .brand-bar {
+    background: linear-gradient(120deg, var(--accent-blue) 0%, var(--accent-blue-bright) 100%);
+    padding: 22px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .brand-bar::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -40%;
+    width: 40%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.18), transparent);
+    animation: shine 3.5s ease-in-out infinite;
+  }
+
+  @keyframes shine {
+    0%   { left: -40%; }
+    45%  { left: 120%; }
+    100% { left: 120%; }
+  }
+
+  .brand-mark {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  .brand-text {
+    color: var(--text-primary);
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .content {
+    padding: 44px 34px 38px 34px;
+  }
+
+  .check-ring {
+    width: 84px;
+    height: 84px;
+    margin: 0 auto 26px auto;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,184,169,0.18) 0%, transparent 70%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .check-circle {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, var(--success), #00877d);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 0 rgba(0, 184, 169, 0.5);
+    animation: pulse-ring 2.2s ease-out infinite;
+  }
+
+  @keyframes pulse-ring {
+    0%   { box-shadow: 0 0 0 0 rgba(0, 184, 169, 0.45); }
+    70%  { box-shadow: 0 0 0 16px rgba(0, 184, 169, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 184, 169, 0); }
+  }
+
+  .check-circle svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .check-path {
+    stroke-dasharray: 40;
+    stroke-dashoffset: 40;
+    animation: draw-check 0.6s 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  }
+
+  @keyframes draw-check {
+    to { stroke-dashoffset: 0; }
+  }
+
+  h1 {
+    color: var(--text-primary);
+    font-size: 25px;
+    font-weight: 800;
+    margin: 0 0 10px 0;
+    letter-spacing: -0.3px;
+  }
+
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 22px;
+    margin: 0 0 24px 0;
+  }
+
+  .email-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 100%;
+    background: rgba(41, 121, 255, 0.08);
+    border: 1px solid rgba(79, 157, 255, 0.3);
+    border-radius: 100px;
+    padding: 10px 20px;
+    margin: 0 0 28px 0;
+  }
+
+  .email-pill svg {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    stroke: var(--accent-blue-bright);
+  }
+
+  #email-text {
+    color: var(--accent-blue-bright);
+    font-size: 14px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0 0 24px 0;
+  }
+
+  .status-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 3px rgba(0, 184, 169, 0.15);
+  }
+
+  .status-text {
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .footnote {
+    color: #4B5058;
+    font-size: 12px;
+    margin: 22px 0 0 0;
+    line-height: 18px;
+  }
+
+  .footer-brand {
+    padding: 18px 34px 26px 34px;
+  }
+
+  .footer-brand span {
+    color: #454952;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  @media (max-width: 400px) {
+    .content { padding: 36px 22px 30px 22px; }
+    h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="backdrop"></div>
+  <div class="grid-lines"></div>
+  <div class="streak"></div>
+  <div class="streak"></div>
+  <div class="streak"></div>
+
+  <div class="stage">
+    <div class="card">
+
+      <div class="brand-bar">
+        <svg class="brand-mark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="#F5F6F8" stroke-width="2"/>
+          <circle cx="12" cy="12" r="3" fill="#F5F6F8"/>
+          <path d="M12 2V5.5M12 18.5V22M22 12H18.5M5.5 12H2" stroke="#F5F6F8" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="brand-text">SpinFest</span>
+      </div>
+
+      <div class="content">
+
+        <div class="check-ring">
+          <div class="check-circle">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path class="check-path" d="M4 12.5L9.5 18L20 6" stroke="#0A0A0C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <h1>Email Verified</h1>
+        <p class="subtitle">
+          You're all set. Your SpinFest account is active and ready to go.
+        </p>
+
+        <div class="email-pill">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16v16H4z" stroke="none"/>
+            <path d="M4 6l8 6 8-6" />
+            <rect x="3" y="5" width="18" height="14" rx="2"/>
+          </svg>
+          <span id="email-text">your@email.com</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="status-row">
+          <span class="status-dot"></span>
+          <span class="status-text">Account status: Active</span>
+        </div>
+
+        <p class="footnote">
+          You can close this page now and sign in from the SpinFest app.
+        </p>
+
+      </div>
+
+      <div class="footer-brand">
+        <span>Spinfest · Burn Rubber, Not Bridges</span>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var email = params.get('email');
+      var emailPill = document.querySelector('.email-pill');
+      var emailText = document.getElementById('email-text');
+
+      if (email) {
+        try {
+          emailText.textContent = decodeURIComponent(email);
+        } catch (e) {
+          emailText.textContent = email;
+        }
+      } else {
+        // No email param present (e.g. page opened directly) — hide
+        // the pill entirely rather than showing a placeholder address.
+        emailPill.style.display = 'none';
+      }
+    })();
+  </script>
+
+</body>
+</html>
